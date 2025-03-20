@@ -1,0 +1,1365 @@
+Subject: [PATCH] remove frontend
+initial commit
+initial commit
+---
+Index: .gitattributes
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitattributes b/.gitattributes
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/.gitattributes	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,2 @@
++/mvnw text eol=lf
++*.cmd text eol=crlf
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+--- /dev/null	(revision a14ddc44dcff69531108507bc714b333057cc526)
++++ b/.gitignore	(revision a14ddc44dcff69531108507bc714b333057cc526)
+@@ -0,0 +1,33 @@
++target/
++!.mvn/wrapper/maven-wrapper.jar
++!**/src/main/**/target/
++!**/src/test/**/target/
++
++### STS ###
++.apt_generated
++.classpath
++.factorypath
++.project
++.settings
++.springBeans
++.sts4-cache
++
++### IntelliJ IDEA ###
++.idea
++*.iws
++*.iml
++*.ipr
++
++### NetBeans ###
++/nbproject/private/
++/nbbuild/
++/dist/
++/nbdist/
++/.nb-gradle/
++build/
++!**/src/main/**/build/
++!**/src/test/**/build/
++
++### VS Code ###
++.vscode/
++/src/main/frontend/
+Index: .mvn/wrapper/maven-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/.mvn/wrapper/maven-wrapper.properties b/.mvn/wrapper/maven-wrapper.properties
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/.mvn/wrapper/maven-wrapper.properties	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,19 @@
++# Licensed to the Apache Software Foundation (ASF) under one
++# or more contributor license agreements.  See the NOTICE file
++# distributed with this work for additional information
++# regarding copyright ownership.  The ASF licenses this file
++# to you under the Apache License, Version 2.0 (the
++# "License"); you may not use this file except in compliance
++# with the License.  You may obtain a copy of the License at
++#
++#   http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing,
++# software distributed under the License is distributed on an
++# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++# KIND, either express or implied.  See the License for the
++# specific language governing permissions and limitations
++# under the License.
++wrapperVersion=3.3.2
++distributionType=only-script
++distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.9/apache-maven-3.9.9-bin.zip
+Index: docker-compose.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docker-compose.yml b/docker-compose.yml
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/docker-compose.yml	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,20 @@
++version: "3"
++services:
++  db:
++    image: mysql:latest
++    restart: always
++    ports:
++      - "3306:3306"
++    environment:
++      MYSQL_ROOT_PASSWORD: secret
++      MYSQL_DATABASE: spring
++    volumes:
++      - Z:/Projects/mysql:/var/lib/mysql
++  phpmyadmin:
++    image: phpmyadmin/phpmyadmin:latest
++    restart: always
++    ports:
++      - "8081:80"
++    environment:
++      PMA_HOST: db
++      MYSQL_ROOT_PASSWORD: secret
+\ No newline at end of file
+Index: mvnw
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mvnw b/mvnw
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/mvnw	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,259 @@
++#!/bin/sh
++# ----------------------------------------------------------------------------
++# Licensed to the Apache Software Foundation (ASF) under one
++# or more contributor license agreements.  See the NOTICE file
++# distributed with this work for additional information
++# regarding copyright ownership.  The ASF licenses this file
++# to you under the Apache License, Version 2.0 (the
++# "License"); you may not use this file except in compliance
++# with the License.  You may obtain a copy of the License at
++#
++#    http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing,
++# software distributed under the License is distributed on an
++# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++# KIND, either express or implied.  See the License for the
++# specific language governing permissions and limitations
++# under the License.
++# ----------------------------------------------------------------------------
++
++# ----------------------------------------------------------------------------
++# Apache Maven Wrapper startup batch script, version 3.3.2
++#
++# Optional ENV vars
++# -----------------
++#   JAVA_HOME - location of a JDK home dir, required when download maven via java source
++#   MVNW_REPOURL - repo url base for downloading maven distribution
++#   MVNW_USERNAME/MVNW_PASSWORD - user and password for downloading maven
++#   MVNW_VERBOSE - true: enable verbose log; debug: trace the mvnw script; others: silence the output
++# ----------------------------------------------------------------------------
++
++set -euf
++[ "${MVNW_VERBOSE-}" != debug ] || set -x
++
++# OS specific support.
++native_path() { printf %s\\n "$1"; }
++case "$(uname)" in
++CYGWIN* | MINGW*)
++  [ -z "${JAVA_HOME-}" ] || JAVA_HOME="$(cygpath --unix "$JAVA_HOME")"
++  native_path() { cygpath --path --windows "$1"; }
++  ;;
++esac
++
++# set JAVACMD and JAVACCMD
++set_java_home() {
++  # For Cygwin and MinGW, ensure paths are in Unix format before anything is touched
++  if [ -n "${JAVA_HOME-}" ]; then
++    if [ -x "$JAVA_HOME/jre/sh/java" ]; then
++      # IBM's JDK on AIX uses strange locations for the executables
++      JAVACMD="$JAVA_HOME/jre/sh/java"
++      JAVACCMD="$JAVA_HOME/jre/sh/javac"
++    else
++      JAVACMD="$JAVA_HOME/bin/java"
++      JAVACCMD="$JAVA_HOME/bin/javac"
++
++      if [ ! -x "$JAVACMD" ] || [ ! -x "$JAVACCMD" ]; then
++        echo "The JAVA_HOME environment variable is not defined correctly, so mvnw cannot run." >&2
++        echo "JAVA_HOME is set to \"$JAVA_HOME\", but \"\$JAVA_HOME/bin/java\" or \"\$JAVA_HOME/bin/javac\" does not exist." >&2
++        return 1
++      fi
++    fi
++  else
++    JAVACMD="$(
++      'set' +e
++      'unset' -f command 2>/dev/null
++      'command' -v java
++    )" || :
++    JAVACCMD="$(
++      'set' +e
++      'unset' -f command 2>/dev/null
++      'command' -v javac
++    )" || :
++
++    if [ ! -x "${JAVACMD-}" ] || [ ! -x "${JAVACCMD-}" ]; then
++      echo "The java/javac command does not exist in PATH nor is JAVA_HOME set, so mvnw cannot run." >&2
++      return 1
++    fi
++  fi
++}
++
++# hash string like Java String::hashCode
++hash_string() {
++  str="${1:-}" h=0
++  while [ -n "$str" ]; do
++    char="${str%"${str#?}"}"
++    h=$(((h * 31 + $(LC_CTYPE=C printf %d "'$char")) % 4294967296))
++    str="${str#?}"
++  done
++  printf %x\\n $h
++}
++
++verbose() { :; }
++[ "${MVNW_VERBOSE-}" != true ] || verbose() { printf %s\\n "${1-}"; }
++
++die() {
++  printf %s\\n "$1" >&2
++  exit 1
++}
++
++trim() {
++  # MWRAPPER-139:
++  #   Trims trailing and leading whitespace, carriage returns, tabs, and linefeeds.
++  #   Needed for removing poorly interpreted newline sequences when running in more
++  #   exotic environments such as mingw bash on Windows.
++  printf "%s" "${1}" | tr -d '[:space:]'
++}
++
++# parse distributionUrl and optional distributionSha256Sum, requires .mvn/wrapper/maven-wrapper.properties
++while IFS="=" read -r key value; do
++  case "${key-}" in
++  distributionUrl) distributionUrl=$(trim "${value-}") ;;
++  distributionSha256Sum) distributionSha256Sum=$(trim "${value-}") ;;
++  esac
++done <"${0%/*}/.mvn/wrapper/maven-wrapper.properties"
++[ -n "${distributionUrl-}" ] || die "cannot read distributionUrl property in ${0%/*}/.mvn/wrapper/maven-wrapper.properties"
++
++case "${distributionUrl##*/}" in
++maven-mvnd-*bin.*)
++  MVN_CMD=mvnd.sh _MVNW_REPO_PATTERN=/maven/mvnd/
++  case "${PROCESSOR_ARCHITECTURE-}${PROCESSOR_ARCHITEW6432-}:$(uname -a)" in
++  *AMD64:CYGWIN* | *AMD64:MINGW*) distributionPlatform=windows-amd64 ;;
++  :Darwin*x86_64) distributionPlatform=darwin-amd64 ;;
++  :Darwin*arm64) distributionPlatform=darwin-aarch64 ;;
++  :Linux*x86_64*) distributionPlatform=linux-amd64 ;;
++  *)
++    echo "Cannot detect native platform for mvnd on $(uname)-$(uname -m), use pure java version" >&2
++    distributionPlatform=linux-amd64
++    ;;
++  esac
++  distributionUrl="${distributionUrl%-bin.*}-$distributionPlatform.zip"
++  ;;
++maven-mvnd-*) MVN_CMD=mvnd.sh _MVNW_REPO_PATTERN=/maven/mvnd/ ;;
++*) MVN_CMD="mvn${0##*/mvnw}" _MVNW_REPO_PATTERN=/org/apache/maven/ ;;
++esac
++
++# apply MVNW_REPOURL and calculate MAVEN_HOME
++# maven home pattern: ~/.m2/wrapper/dists/{apache-maven-<version>,maven-mvnd-<version>-<platform>}/<hash>
++[ -z "${MVNW_REPOURL-}" ] || distributionUrl="$MVNW_REPOURL$_MVNW_REPO_PATTERN${distributionUrl#*"$_MVNW_REPO_PATTERN"}"
++distributionUrlName="${distributionUrl##*/}"
++distributionUrlNameMain="${distributionUrlName%.*}"
++distributionUrlNameMain="${distributionUrlNameMain%-bin}"
++MAVEN_USER_HOME="${MAVEN_USER_HOME:-${HOME}/.m2}"
++MAVEN_HOME="${MAVEN_USER_HOME}/wrapper/dists/${distributionUrlNameMain-}/$(hash_string "$distributionUrl")"
++
++exec_maven() {
++  unset MVNW_VERBOSE MVNW_USERNAME MVNW_PASSWORD MVNW_REPOURL || :
++  exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
++}
++
++if [ -d "$MAVEN_HOME" ]; then
++  verbose "found existing MAVEN_HOME at $MAVEN_HOME"
++  exec_maven "$@"
++fi
++
++case "${distributionUrl-}" in
++*?-bin.zip | *?maven-mvnd-?*-?*.zip) ;;
++*) die "distributionUrl is not valid, must match *-bin.zip or maven-mvnd-*.zip, but found '${distributionUrl-}'" ;;
++esac
++
++# prepare tmp dir
++if TMP_DOWNLOAD_DIR="$(mktemp -d)" && [ -d "$TMP_DOWNLOAD_DIR" ]; then
++  clean() { rm -rf -- "$TMP_DOWNLOAD_DIR"; }
++  trap clean HUP INT TERM EXIT
++else
++  die "cannot create temp dir"
++fi
++
++mkdir -p -- "${MAVEN_HOME%/*}"
++
++# Download and Install Apache Maven
++verbose "Couldn't find MAVEN_HOME, downloading and installing it ..."
++verbose "Downloading from: $distributionUrl"
++verbose "Downloading to: $TMP_DOWNLOAD_DIR/$distributionUrlName"
++
++# select .zip or .tar.gz
++if ! command -v unzip >/dev/null; then
++  distributionUrl="${distributionUrl%.zip}.tar.gz"
++  distributionUrlName="${distributionUrl##*/}"
++fi
++
++# verbose opt
++__MVNW_QUIET_WGET=--quiet __MVNW_QUIET_CURL=--silent __MVNW_QUIET_UNZIP=-q __MVNW_QUIET_TAR=''
++[ "${MVNW_VERBOSE-}" != true ] || __MVNW_QUIET_WGET='' __MVNW_QUIET_CURL='' __MVNW_QUIET_UNZIP='' __MVNW_QUIET_TAR=v
++
++# normalize http auth
++case "${MVNW_PASSWORD:+has-password}" in
++'') MVNW_USERNAME='' MVNW_PASSWORD='' ;;
++has-password) [ -n "${MVNW_USERNAME-}" ] || MVNW_USERNAME='' MVNW_PASSWORD='' ;;
++esac
++
++if [ -z "${MVNW_USERNAME-}" ] && command -v wget >/dev/null; then
++  verbose "Found wget ... using wget"
++  wget ${__MVNW_QUIET_WGET:+"$__MVNW_QUIET_WGET"} "$distributionUrl" -O "$TMP_DOWNLOAD_DIR/$distributionUrlName" || die "wget: Failed to fetch $distributionUrl"
++elif [ -z "${MVNW_USERNAME-}" ] && command -v curl >/dev/null; then
++  verbose "Found curl ... using curl"
++  curl ${__MVNW_QUIET_CURL:+"$__MVNW_QUIET_CURL"} -f -L -o "$TMP_DOWNLOAD_DIR/$distributionUrlName" "$distributionUrl" || die "curl: Failed to fetch $distributionUrl"
++elif set_java_home; then
++  verbose "Falling back to use Java to download"
++  javaSource="$TMP_DOWNLOAD_DIR/Downloader.java"
++  targetZip="$TMP_DOWNLOAD_DIR/$distributionUrlName"
++  cat >"$javaSource" <<-END
++	public class Downloader extends java.net.Authenticator
++	{
++	  protected java.net.PasswordAuthentication getPasswordAuthentication()
++	  {
++	    return new java.net.PasswordAuthentication( System.getenv( "MVNW_USERNAME" ), System.getenv( "MVNW_PASSWORD" ).toCharArray() );
++	  }
++	  public static void main( String[] args ) throws Exception
++	  {
++	    setDefault( new Downloader() );
++	    java.nio.file.Files.copy( java.net.URI.create( args[0] ).toURL().openStream(), java.nio.file.Paths.get( args[1] ).toAbsolutePath().normalize() );
++	  }
++	}
++	END
++  # For Cygwin/MinGW, switch paths to Windows format before running javac and java
++  verbose " - Compiling Downloader.java ..."
++  "$(native_path "$JAVACCMD")" "$(native_path "$javaSource")" || die "Failed to compile Downloader.java"
++  verbose " - Running Downloader.java ..."
++  "$(native_path "$JAVACMD")" -cp "$(native_path "$TMP_DOWNLOAD_DIR")" Downloader "$distributionUrl" "$(native_path "$targetZip")"
++fi
++
++# If specified, validate the SHA-256 sum of the Maven distribution zip file
++if [ -n "${distributionSha256Sum-}" ]; then
++  distributionSha256Result=false
++  if [ "$MVN_CMD" = mvnd.sh ]; then
++    echo "Checksum validation is not supported for maven-mvnd." >&2
++    echo "Please disable validation by removing 'distributionSha256Sum' from your maven-wrapper.properties." >&2
++    exit 1
++  elif command -v sha256sum >/dev/null; then
++    if echo "$distributionSha256Sum  $TMP_DOWNLOAD_DIR/$distributionUrlName" | sha256sum -c >/dev/null 2>&1; then
++      distributionSha256Result=true
++    fi
++  elif command -v shasum >/dev/null; then
++    if echo "$distributionSha256Sum  $TMP_DOWNLOAD_DIR/$distributionUrlName" | shasum -a 256 -c >/dev/null 2>&1; then
++      distributionSha256Result=true
++    fi
++  else
++    echo "Checksum validation was requested but neither 'sha256sum' or 'shasum' are available." >&2
++    echo "Please install either command, or disable validation by removing 'distributionSha256Sum' from your maven-wrapper.properties." >&2
++    exit 1
++  fi
++  if [ $distributionSha256Result = false ]; then
++    echo "Error: Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised." >&2
++    echo "If you updated your Maven version, you need to update the specified distributionSha256Sum property." >&2
++    exit 1
++  fi
++fi
++
++# unzip and move
++if command -v unzip >/dev/null; then
++  unzip ${__MVNW_QUIET_UNZIP:+"$__MVNW_QUIET_UNZIP"} "$TMP_DOWNLOAD_DIR/$distributionUrlName" -d "$TMP_DOWNLOAD_DIR" || die "failed to unzip"
++else
++  tar xzf${__MVNW_QUIET_TAR:+"$__MVNW_QUIET_TAR"} "$TMP_DOWNLOAD_DIR/$distributionUrlName" -C "$TMP_DOWNLOAD_DIR" || die "failed to untar"
++fi
++printf %s\\n "$distributionUrl" >"$TMP_DOWNLOAD_DIR/$distributionUrlNameMain/mvnw.url"
++mv -- "$TMP_DOWNLOAD_DIR/$distributionUrlNameMain" "$MAVEN_HOME" || [ -d "$MAVEN_HOME" ] || die "fail to move MAVEN_HOME"
++
++clean || :
++exec_maven "$@"
+Index: mvnw.cmd
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mvnw.cmd b/mvnw.cmd
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/mvnw.cmd	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,149 @@
++<# : batch portion
++@REM ----------------------------------------------------------------------------
++@REM Licensed to the Apache Software Foundation (ASF) under one
++@REM or more contributor license agreements.  See the NOTICE file
++@REM distributed with this work for additional information
++@REM regarding copyright ownership.  The ASF licenses this file
++@REM to you under the Apache License, Version 2.0 (the
++@REM "License"); you may not use this file except in compliance
++@REM with the License.  You may obtain a copy of the License at
++@REM
++@REM    http://www.apache.org/licenses/LICENSE-2.0
++@REM
++@REM Unless required by applicable law or agreed to in writing,
++@REM software distributed under the License is distributed on an
++@REM "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++@REM KIND, either express or implied.  See the License for the
++@REM specific language governing permissions and limitations
++@REM under the License.
++@REM ----------------------------------------------------------------------------
++
++@REM ----------------------------------------------------------------------------
++@REM Apache Maven Wrapper startup batch script, version 3.3.2
++@REM
++@REM Optional ENV vars
++@REM   MVNW_REPOURL - repo url base for downloading maven distribution
++@REM   MVNW_USERNAME/MVNW_PASSWORD - user and password for downloading maven
++@REM   MVNW_VERBOSE - true: enable verbose log; others: silence the output
++@REM ----------------------------------------------------------------------------
++
++@IF "%__MVNW_ARG0_NAME__%"=="" (SET __MVNW_ARG0_NAME__=%~nx0)
++@SET __MVNW_CMD__=
++@SET __MVNW_ERROR__=
++@SET __MVNW_PSMODULEP_SAVE=%PSModulePath%
++@SET PSModulePath=
++@FOR /F "usebackq tokens=1* delims==" %%A IN (`powershell -noprofile "& {$scriptDir='%~dp0'; $script='%__MVNW_ARG0_NAME__%'; icm -ScriptBlock ([Scriptblock]::Create((Get-Content -Raw '%~f0'))) -NoNewScope}"`) DO @(
++  IF "%%A"=="MVN_CMD" (set __MVNW_CMD__=%%B) ELSE IF "%%B"=="" (echo %%A) ELSE (echo %%A=%%B)
++)
++@SET PSModulePath=%__MVNW_PSMODULEP_SAVE%
++@SET __MVNW_PSMODULEP_SAVE=
++@SET __MVNW_ARG0_NAME__=
++@SET MVNW_USERNAME=
++@SET MVNW_PASSWORD=
++@IF NOT "%__MVNW_CMD__%"=="" (%__MVNW_CMD__% %*)
++@echo Cannot start maven from wrapper >&2 && exit /b 1
++@GOTO :EOF
++: end batch / begin powershell #>
++
++$ErrorActionPreference = "Stop"
++if ($env:MVNW_VERBOSE -eq "true") {
++  $VerbosePreference = "Continue"
++}
++
++# calculate distributionUrl, requires .mvn/wrapper/maven-wrapper.properties
++$distributionUrl = (Get-Content -Raw "$scriptDir/.mvn/wrapper/maven-wrapper.properties" | ConvertFrom-StringData).distributionUrl
++if (!$distributionUrl) {
++  Write-Error "cannot read distributionUrl property in $scriptDir/.mvn/wrapper/maven-wrapper.properties"
++}
++
++switch -wildcard -casesensitive ( $($distributionUrl -replace '^.*/','') ) {
++  "maven-mvnd-*" {
++    $USE_MVND = $true
++    $distributionUrl = $distributionUrl -replace '-bin\.[^.]*$',"-windows-amd64.zip"
++    $MVN_CMD = "mvnd.cmd"
++    break
++  }
++  default {
++    $USE_MVND = $false
++    $MVN_CMD = $script -replace '^mvnw','mvn'
++    break
++  }
++}
++
++# apply MVNW_REPOURL and calculate MAVEN_HOME
++# maven home pattern: ~/.m2/wrapper/dists/{apache-maven-<version>,maven-mvnd-<version>-<platform>}/<hash>
++if ($env:MVNW_REPOURL) {
++  $MVNW_REPO_PATTERN = if ($USE_MVND) { "/org/apache/maven/" } else { "/maven/mvnd/" }
++  $distributionUrl = "$env:MVNW_REPOURL$MVNW_REPO_PATTERN$($distributionUrl -replace '^.*'+$MVNW_REPO_PATTERN,'')"
++}
++$distributionUrlName = $distributionUrl -replace '^.*/',''
++$distributionUrlNameMain = $distributionUrlName -replace '\.[^.]*$','' -replace '-bin$',''
++$MAVEN_HOME_PARENT = "$HOME/.m2/wrapper/dists/$distributionUrlNameMain"
++if ($env:MAVEN_USER_HOME) {
++  $MAVEN_HOME_PARENT = "$env:MAVEN_USER_HOME/wrapper/dists/$distributionUrlNameMain"
++}
++$MAVEN_HOME_NAME = ([System.Security.Cryptography.MD5]::Create().ComputeHash([byte[]][char[]]$distributionUrl) | ForEach-Object {$_.ToString("x2")}) -join ''
++$MAVEN_HOME = "$MAVEN_HOME_PARENT/$MAVEN_HOME_NAME"
++
++if (Test-Path -Path "$MAVEN_HOME" -PathType Container) {
++  Write-Verbose "found existing MAVEN_HOME at $MAVEN_HOME"
++  Write-Output "MVN_CMD=$MAVEN_HOME/bin/$MVN_CMD"
++  exit $?
++}
++
++if (! $distributionUrlNameMain -or ($distributionUrlName -eq $distributionUrlNameMain)) {
++  Write-Error "distributionUrl is not valid, must end with *-bin.zip, but found $distributionUrl"
++}
++
++# prepare tmp dir
++$TMP_DOWNLOAD_DIR_HOLDER = New-TemporaryFile
++$TMP_DOWNLOAD_DIR = New-Item -Itemtype Directory -Path "$TMP_DOWNLOAD_DIR_HOLDER.dir"
++$TMP_DOWNLOAD_DIR_HOLDER.Delete() | Out-Null
++trap {
++  if ($TMP_DOWNLOAD_DIR.Exists) {
++    try { Remove-Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
++    catch { Write-Warning "Cannot remove $TMP_DOWNLOAD_DIR" }
++  }
++}
++
++New-Item -Itemtype Directory -Path "$MAVEN_HOME_PARENT" -Force | Out-Null
++
++# Download and Install Apache Maven
++Write-Verbose "Couldn't find MAVEN_HOME, downloading and installing it ..."
++Write-Verbose "Downloading from: $distributionUrl"
++Write-Verbose "Downloading to: $TMP_DOWNLOAD_DIR/$distributionUrlName"
++
++$webclient = New-Object System.Net.WebClient
++if ($env:MVNW_USERNAME -and $env:MVNW_PASSWORD) {
++  $webclient.Credentials = New-Object System.Net.NetworkCredential($env:MVNW_USERNAME, $env:MVNW_PASSWORD)
++}
++[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
++$webclient.DownloadFile($distributionUrl, "$TMP_DOWNLOAD_DIR/$distributionUrlName") | Out-Null
++
++# If specified, validate the SHA-256 sum of the Maven distribution zip file
++$distributionSha256Sum = (Get-Content -Raw "$scriptDir/.mvn/wrapper/maven-wrapper.properties" | ConvertFrom-StringData).distributionSha256Sum
++if ($distributionSha256Sum) {
++  if ($USE_MVND) {
++    Write-Error "Checksum validation is not supported for maven-mvnd. `nPlease disable validation by removing 'distributionSha256Sum' from your maven-wrapper.properties."
++  }
++  Import-Module $PSHOME\Modules\Microsoft.PowerShell.Utility -Function Get-FileHash
++  if ((Get-FileHash "$TMP_DOWNLOAD_DIR/$distributionUrlName" -Algorithm SHA256).Hash.ToLower() -ne $distributionSha256Sum) {
++    Write-Error "Error: Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised. If you updated your Maven version, you need to update the specified distributionSha256Sum property."
++  }
++}
++
++# unzip and move
++Expand-Archive "$TMP_DOWNLOAD_DIR/$distributionUrlName" -DestinationPath "$TMP_DOWNLOAD_DIR" | Out-Null
++Rename-Item -Path "$TMP_DOWNLOAD_DIR/$distributionUrlNameMain" -NewName $MAVEN_HOME_NAME | Out-Null
++try {
++  Move-Item -Path "$TMP_DOWNLOAD_DIR/$MAVEN_HOME_NAME" -Destination $MAVEN_HOME_PARENT | Out-Null
++} catch {
++  if (! (Test-Path -Path "$MAVEN_HOME" -PathType Container)) {
++    Write-Error "fail to move MAVEN_HOME"
++  }
++} finally {
++  try { Remove-Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
++  catch { Write-Warning "Cannot remove $TMP_DOWNLOAD_DIR" }
++}
++
++Write-Output "MVN_CMD=$MAVEN_HOME/bin/$MVN_CMD"
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/pom.xml	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,142 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
++	<modelVersion>4.0.0</modelVersion>
++	<parent>
++		<groupId>org.springframework.boot</groupId>
++		<artifactId>spring-boot-starter-parent</artifactId>
++		<version>3.4.3</version>
++		<relativePath/>
++	</parent>
++	<groupId>com.example</groupId>
++	<artifactId>demo</artifactId>
++	<version>0.0.1-SNAPSHOT</version>
++	<name>demo</name>
++	<description>Demo project for Spring Boot</description>
++	<url/>
++	<licenses>
++		<license/>
++	</licenses>
++	<developers>
++		<developer/>
++	</developers>
++	<scm>
++		<connection/>
++		<developerConnection/>
++		<tag/>
++		<url/>
++	</scm>
++	<properties>
++		<java.version>17</java.version>
++		<vaadin.version>24.6.7</vaadin.version>
++	</properties>
++	<dependencies>
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-starter-web</artifactId>
++		</dependency>
++
++		<dependency>
++			<groupId>mysql</groupId>
++			<artifactId>mysql-connector-java</artifactId>
++			<version>8.0.33</version>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-devtools</artifactId>
++			<scope>runtime</scope>
++			<optional>true</optional>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-starter-data-jpa</artifactId>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-starter-test</artifactId>
++			<scope>test</scope>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-starter-jdbc</artifactId>
++		</dependency>
++
++		<dependency>
++			<groupId>org.projectlombok</groupId>
++			<artifactId>lombok</artifactId>
++			<optional>true</optional>
++		</dependency>
++
++		<dependency>
++			<groupId>com.vaadin</groupId>
++			<artifactId>vaadin-core</artifactId>
++			<exclusions>
++				<exclusion>
++					<groupId>com.vaadin</groupId>
++					<artifactId>hilla-dev</artifactId>
++				</exclusion>
++			</exclusions>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-starter-validation</artifactId>
++		</dependency>
++
++		<dependency>
++			<groupId>org.springframework.boot</groupId>
++			<artifactId>spring-boot-devtools</artifactId>
++			<optional>true</optional>
++		</dependency>
++
++		<dependency>
++			<groupId>com.vaadin</groupId>
++			<artifactId>vaadin-spring-boot-starter</artifactId>
++			<exclusions>
++				<exclusion>
++					<groupId>com.vaadin</groupId>
++					<artifactId>hilla</artifactId>
++				</exclusion>
++			</exclusions>
++		</dependency>
++	</dependencies>
++
++	<dependencyManagement>
++		<dependencies>
++			<dependency>
++				<groupId>com.vaadin</groupId>
++				<artifactId>vaadin-bom</artifactId>
++				<version>${vaadin.version}</version>
++				<type>pom</type>
++				<scope>import</scope>
++			</dependency>
++		</dependencies>
++	</dependencyManagement>
++
++	<build>
++		<plugins>
++			<plugin>
++				<groupId>org.springframework.boot</groupId>
++				<artifactId>spring-boot-maven-plugin</artifactId>
++			</plugin>
++			<plugin>
++				<groupId>com.vaadin</groupId>
++				<artifactId>vaadin-maven-plugin</artifactId>
++				<version>${vaadin.version}</version>
++				<executions>
++					<execution>
++						<goals>
++							<goal>prepare-frontend</goal>
++							<goal>build-frontend</goal>
++						</goals>
++					</execution>
++				</executions>
++			</plugin>
++		</plugins>
++	</build>
++
++</project>
+Index: src/main/java/com/example/demo/TaskBoardApplication.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/TaskBoardApplication.java b/src/main/java/com/example/demo/TaskBoardApplication.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/TaskBoardApplication.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,12 @@
++package com.example.demo;
++
++import org.springframework.boot.SpringApplication;
++import org.springframework.boot.autoconfigure.SpringBootApplication;
++
++@SpringBootApplication
++public class TaskBoardApplication {
++
++	public static void main(String[] args) {
++		SpringApplication.run(TaskBoardApplication.class, args);
++	}
++}
+Index: src/main/java/com/example/demo/component/CustomEvent.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/component/CustomEvent.java b/src/main/java/com/example/demo/component/CustomEvent.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/component/CustomEvent.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,12 @@
++package com.example.demo.component;
++
++import com.vaadin.flow.component.Component;
++import com.vaadin.flow.component.ComponentEvent;
++import com.vaadin.flow.component.button.Button;
++import com.vaadin.flow.component.textfield.TextField;
++
++public class CustomEvent extends ComponentEvent<TextField> {
++    public CustomEvent(TextField source, boolean fromClient) {
++        super(source, fromClient);
++    }
++}
+\ No newline at end of file
+Index: src/main/java/com/example/demo/controller/TaskController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/controller/TaskController.java b/src/main/java/com/example/demo/controller/TaskController.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/controller/TaskController.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,39 @@
++package com.example.demo.controller;
++
++import com.example.demo.entity.Task;
++import com.example.demo.service.TaskService;
++import jakarta.validation.Valid;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++public class TaskController {
++
++    @Autowired
++    private TaskService taskService;
++
++    @PostMapping("/tasks")
++    public Task saveTask(@Valid @RequestBody Task task) {
++        return taskService.saveTask(task);
++    }
++
++    @GetMapping("/tasks")
++    public List<Task> fetchTaskList()
++    {
++        return taskService.fetchTaskList();
++    }
++
++
++    @PutMapping("/tasks/{id}")
++    public Task updateTask(@RequestBody Task task, @PathVariable("id") Long taskId)
++    {
++        return taskService.updateTask(task, taskId);
++    }
++
++    @DeleteMapping(value="/{id}")
++    public void deleteTask(@PathVariable("id") Long id){
++        taskService.deleteTaskById(id);
++    }
++}
+Index: src/main/java/com/example/demo/entity/Task.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/entity/Task.java b/src/main/java/com/example/demo/entity/Task.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/entity/Task.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,26 @@
++package com.example.demo.entity;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import org.springframework.lang.Nullable;
++
++@Entity
++@Data
++@NoArgsConstructor
++@Table(name = "tasks")
++public class Task {
++    @Id
++    @GeneratedValue(strategy = GenerationType.AUTO)
++    private Long id;
++    private String title;
++    private String description;
++    private Boolean active;
++    private String author;
++
++    public Task(String title, String description, String author) {
++        this.title = title;
++        this.description = description;
++        this.author = author;
++    }
++}
+Index: src/main/java/com/example/demo/layout/MainLayout.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/layout/MainLayout.java b/src/main/java/com/example/demo/layout/MainLayout.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/layout/MainLayout.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,90 @@
++package com.example.demo.layout;
++
++import com.example.demo.service.TaskService;
++import com.example.demo.view.CreateTaskView;
++import com.example.demo.view.MainView;
++import com.vaadin.flow.component.applayout.AppLayout;
++import com.vaadin.flow.component.applayout.DrawerToggle;
++import com.vaadin.flow.component.html.H2;
++import com.vaadin.flow.component.html.Header;
++import com.vaadin.flow.component.html.Hr;
++import com.vaadin.flow.component.html.Span;
++import com.vaadin.flow.component.icon.VaadinIcon;
++import com.vaadin.flow.component.orderedlayout.Scroller;
++import com.vaadin.flow.component.sidenav.SideNav;
++import com.vaadin.flow.component.sidenav.SideNavItem;
++import com.vaadin.flow.router.HasDynamicTitle;
++import com.vaadin.flow.router.Layout;
++import com.vaadin.flow.router.PageTitle;
++import com.vaadin.flow.theme.lumo.LumoUtility;
++
++@Layout
++public class MainLayout extends AppLayout {
++
++    private final TaskService taskService;
++
++    private H2 viewTitle;
++
++    public MainLayout(TaskService taskService) {
++        this.taskService = taskService;
++        setPrimarySection(Section.DRAWER);
++        addNavbarContent();
++        addDrawerContent();
++    }
++
++    private void addNavbarContent() {
++        var toggle = new DrawerToggle();
++        toggle.setAriaLabel("Menu toggle");
++        toggle.setTooltipText("Menu toggle");
++
++        viewTitle = new H2();
++        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE,
++                LumoUtility.Flex.GROW);
++
++        var header = new Header(toggle, viewTitle);
++        header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
++                LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
++
++        addToNavbar(false, header);
++    }
++
++    private void addDrawerContent() {
++
++        var appName = new Span("Task Board");
++        appName.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
++                LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.SEMIBOLD,
++                LumoUtility.Height.XLARGE, LumoUtility.Padding.Horizontal.MEDIUM);
++
++        var createTaskView = new CreateTaskView(taskService);
++
++        addToDrawer(appName, new Scroller(createSideNav()), new Hr(), createTaskView);
++    }
++
++
++
++    private SideNav createSideNav() {
++        SideNav nav = new SideNav();
++
++        nav.addItem(new SideNavItem("Задачи", MainView.class,
++                VaadinIcon.TASKS.create()));
++
++        return nav;
++    }
++
++    private String getCurrentPageTitle() {
++        if (getContent() == null) {
++            return "";
++        } else if (getContent() instanceof HasDynamicTitle titleHolder) {
++            return titleHolder.getPageTitle();
++        } else {
++            var title = getContent().getClass().getAnnotation(PageTitle.class);
++            return title == null ? "" : title.value();
++        }
++    }
++
++    @Override
++    protected void afterNavigation() {
++        super.afterNavigation();
++        viewTitle.setText(getCurrentPageTitle());
++    }
++}
+\ No newline at end of file
+Index: src/main/java/com/example/demo/repository/TaskRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/repository/TaskRepository.java b/src/main/java/com/example/demo/repository/TaskRepository.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/repository/TaskRepository.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,8 @@
++package com.example.demo.repository;
++
++import com.example.demo.entity.Task;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++public interface TaskRepository extends JpaRepository<Task, Long> {
++
++}
+Index: src/main/java/com/example/demo/service/TaskService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/service/TaskService.java b/src/main/java/com/example/demo/service/TaskService.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/service/TaskService.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,16 @@
++package com.example.demo.service;
++
++import com.example.demo.entity.Task;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++
++@Service
++public interface TaskService {
++    Task saveTask(Task task);
++    List<Task> fetchTaskList();
++    Optional<Task> fetchTaskById(Long taskId);
++    Task updateTask(Task task, Long taskId);
++    void deleteTaskById(Long taskId);
++}
+Index: src/main/java/com/example/demo/service/TaskServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/service/TaskServiceImpl.java b/src/main/java/com/example/demo/service/TaskServiceImpl.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/service/TaskServiceImpl.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,54 @@
++package com.example.demo.service;
++
++import com.example.demo.entity.Task;
++import com.example.demo.repository.TaskRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Objects;
++import java.util.Optional;
++
++@Service
++public class TaskServiceImpl implements TaskService {
++
++    @Autowired
++    private TaskRepository taskRepository;
++
++    @Override
++    public Task saveTask(Task task) {
++        return taskRepository.save(task);
++    }
++
++    @Override
++    public List<Task> fetchTaskList() {
++        return taskRepository.findAll();
++    }
++
++    @Override
++    public Optional<Task> fetchTaskById(Long taskId) {
++        return taskRepository.findById(taskId);
++    }
++
++    @Override
++    public Task updateTask(Task task, Long taskId) {
++        Task taskDB = taskRepository.findById(taskId).get();
++
++        if (Objects.nonNull(task.getTitle()) && !"".equalsIgnoreCase(task.getTitle())) {
++            taskDB.setTitle(task.getTitle());
++        }
++
++        if (Objects.nonNull(task.getDescription())) {
++            taskDB.setDescription(task.getDescription());
++        }
++
++        taskDB.setActive(task.getActive());
++
++        return taskRepository.save(taskDB);
++    }
++
++    @Override
++    public void deleteTaskById(Long taskId) {
++        taskRepository.deleteById(taskId);
++    }
++}
+Index: src/main/java/com/example/demo/view/CreateTaskView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/view/CreateTaskView.java b/src/main/java/com/example/demo/view/CreateTaskView.java
+new file mode 100644
+--- /dev/null	(revision 36053dd520ca23d9b7d47a78f9d099ae651b2965)
++++ b/src/main/java/com/example/demo/view/CreateTaskView.java	(revision 36053dd520ca23d9b7d47a78f9d099ae651b2965)
+@@ -0,0 +1,52 @@
++package com.example.demo.view;
++
++import com.example.demo.component.CustomEvent;
++import com.example.demo.entity.Task;
++import com.example.demo.service.TaskService;
++import com.vaadin.flow.component.button.Button;
++import com.vaadin.flow.component.button.ButtonVariant;
++import com.vaadin.flow.component.orderedlayout.VerticalLayout;
++import com.vaadin.flow.component.textfield.TextArea;
++import com.vaadin.flow.component.textfield.TextField;
++
++public class CreateTaskView extends VerticalLayout {
++
++    private TaskService taskService;
++    private TextField taskTitleField;
++    private TextArea taskDescriptionField;
++    private Button addTaskButton;
++
++    public CreateTaskView(TaskService taskService) {
++        this.taskService = taskService;
++
++        taskTitleField = new TextField();
++        taskTitleField.setPlaceholder("Название задачи");
++        taskTitleField.setWidthFull();
++
++        taskDescriptionField = new TextArea();
++        taskDescriptionField.setPlaceholder("Описание задачи");
++        taskDescriptionField.setSizeFull();
++
++        addTaskButton = new Button("Добавить задачу", event -> addTask());
++        addTaskButton.setDisableOnClick(true);
++        addTaskButton.setWidthFull();
++        addTaskButton.getStyle().setCursor("pointer");
++        addTaskButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
++
++        add(taskTitleField, taskDescriptionField, addTaskButton);
++    }
++
++    private void addTask() {
++        try {
++            var taskTitle = taskTitleField.getValue();
++            var taskDescription = taskDescriptionField.getValue();
++            if (!taskTitle.isBlank()) {
++                taskService.saveTask(new Task(taskTitle, taskDescription, "ykulagin"));
++                taskTitleField.clear();
++                taskDescriptionField.clear();
++            }
++        } finally {
++            addTaskButton.setEnabled(true);
++        }
++    }
++}
+Index: src/main/java/com/example/demo/view/MainView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/view/MainView.java b/src/main/java/com/example/demo/view/MainView.java
+new file mode 100644
+--- /dev/null	(revision 36053dd520ca23d9b7d47a78f9d099ae651b2965)
++++ b/src/main/java/com/example/demo/view/MainView.java	(revision 36053dd520ca23d9b7d47a78f9d099ae651b2965)
+@@ -0,0 +1,108 @@
++package com.example.demo.view;
++
++import com.example.demo.entity.Task;
++import com.example.demo.layout.MainLayout;
++import com.example.demo.service.TaskService;
++import com.vaadin.flow.component.AttachEvent;
++import com.vaadin.flow.component.button.Button;
++import com.vaadin.flow.component.grid.Grid;
++import com.vaadin.flow.component.grid.GridVariant;
++import com.vaadin.flow.component.icon.Icon;
++import com.vaadin.flow.component.icon.VaadinIcon;
++import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
++import com.vaadin.flow.router.Route;
++
++@Route(value = "", layout = MainLayout.class)
++public class MainView extends Grid<Task> {
++    private final TaskService taskService;
++
++    public MainView(TaskService taskService) {
++        this.taskService = taskService;
++        configureBeanType(Task.class, false);
++
++        //styling
++        addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
++
++        //listeners
++        addItemClickListener(event -> getUI().orElseThrow().getPage().setLocation("/task/%d".formatted(event.getItem().getId())));
++
++        //columns
++        addComponentColumn(task -> createStatusIcon(task.getActive())).setAutoWidth(true).setFlexGrow(0);
++        addColumn(Task::getTitle).setHeader("Название задачи").setSortable(true).setResizable(true).setAutoWidth(true).setFlexGrow(0);
++        addColumn(Task::getDescription).setHeader("Описание задачи");
++        addColumn(Task::getAuthor).setHeader("Автор задачи").setSortable(true).setAutoWidth(true).setFlexGrow(0);
++        addComponentColumn(this::createItemMenu).setAutoWidth(true).setFlexGrow(0);
++    }
++
++    private void refreshTasks() {
++        setItems(taskService.fetchTaskList());
++    }
++
++    @Override
++    protected void onAttach(AttachEvent attachEvent) {
++        refreshTasks();
++    }
++
++    private Icon createStatusIcon(Boolean isActive) {
++        Icon icon;
++        if (isActive != null && isActive.equals(true)) {
++            icon = createIcon(VaadinIcon.CHECK_CIRCLE_O, "Выполнена");
++            icon.getElement().getThemeList().add("badge success");
++        } else if (isActive != null && isActive.equals(false)) {
++            icon = createIcon(VaadinIcon.CLOSE_CIRCLE_O, "Отменена");
++            icon.getElement().getThemeList().add("badge error");
++        } else {
++            icon = createIcon(VaadinIcon.CIRCLE, "Новая");
++            icon.getElement().getThemeList().add("badge warning");
++        }
++        return icon;
++    }
++
++    private Icon createIcon(VaadinIcon vaadinIcon, String label) {
++        Icon icon = vaadinIcon.create();
++        icon.getStyle().set("padding", "var(--lumo-space-xs");
++        // Accessible label
++        icon.getElement().setAttribute("aria-label", label);
++        // Tooltip
++        icon.getElement().setAttribute("title", label);
++        return icon;
++    }
++
++    private HorizontalLayout createItemMenu(Task task) {
++        HorizontalLayout buttonsBlock = new HorizontalLayout();
++
++        Button editButton = new Button("Редактировать", event -> {
++            getUI().orElseThrow().getPage().setLocation("/task/%d".formatted(task.getId()));
++        });
++        buttonsBlock.add(editButton);
++
++        Button finishButton = new Button("Завершить", event -> {
++            task.setActive(true);
++            taskService.updateTask(task, task.getId());
++            refreshTasks();
++        });
++        buttonsBlock.add(finishButton);
++
++        Button cancelButton = new Button("Отменить", event -> {
++            task.setActive(false);
++            taskService.updateTask(task, task.getId());
++            refreshTasks();
++        });
++        buttonsBlock.add(cancelButton);
++
++        Button recoverButton = new Button("Восстановить", event -> {
++            task.setActive(null);
++            taskService.updateTask(task, task.getId());
++            refreshTasks();
++        });
++        buttonsBlock.add(recoverButton);
++
++        Button deleteButton = new Button("Удалить", event -> {
++            taskService.deleteTaskById(task.getId());
++            refreshTasks();
++        });
++        buttonsBlock.add(deleteButton);
++
++        return buttonsBlock;
++    }
++}
+Index: src/main/java/com/example/demo/view/TaskView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/view/TaskView.java b/src/main/java/com/example/demo/view/TaskView.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/java/com/example/demo/view/TaskView.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,90 @@
++package com.example.demo.view;
++
++import com.example.demo.entity.Task;
++import com.example.demo.service.TaskService;
++import com.vaadin.flow.component.button.Button;
++import com.vaadin.flow.component.button.ButtonVariant;
++import com.vaadin.flow.component.html.Input;
++import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
++import com.vaadin.flow.component.orderedlayout.VerticalLayout;
++import com.vaadin.flow.component.textfield.TextArea;
++import com.vaadin.flow.component.textfield.TextField;
++import com.vaadin.flow.router.BeforeEvent;
++import com.vaadin.flow.router.HasUrlParameter;
++import com.vaadin.flow.router.Route;
++import com.vaadin.flow.theme.lumo.Lumo;
++
++import java.util.Optional;
++
++@Route(value = "task")
++public class TaskView extends VerticalLayout implements HasUrlParameter<Long> {
++
++    private Long taskId;
++    private Task task;
++    private final TextField taskIdInput;
++    private final TextField taskTitleInput;
++    private final TextArea taskDescriptionInput;
++    private final Button saveTaskButton;
++    private final Button returnButton;
++    private final TaskService taskService;
++
++    public TaskView(TaskService taskService) {
++        this.taskService = taskService;
++        setSizeFull();
++        getThemeList().add(Lumo.DARK);
++
++        taskIdInput = new TextField();
++        taskIdInput.setLabel("Номер задачи");
++        taskIdInput.setWidthFull();
++        taskIdInput.setReadOnly(true);
++        add(taskIdInput);
++
++        taskTitleInput = new TextField();
++        taskTitleInput.setLabel("Название задачи");
++        taskTitleInput.setWidthFull();
++        add(taskTitleInput);
++
++        taskDescriptionInput = new TextArea();
++        taskDescriptionInput.setLabel("Описание задачи");
++        taskDescriptionInput.setSizeFull();
++        add(taskDescriptionInput);
++
++        //buttons
++        HorizontalLayout buttons = new HorizontalLayout();
++        buttons.setWidthFull();
++        buttons.setJustifyContentMode(JustifyContentMode.END);
++
++        saveTaskButton = new Button("Сохранить", event -> {
++            task.setTitle(taskTitleInput.getValue());
++            task.setDescription(taskDescriptionInput.getValue());
++            taskService.updateTask(task, taskId);
++            getUI().orElseThrow().getPage().setLocation("/");
++        });
++        saveTaskButton.setDisableOnClick(true);
++        saveTaskButton.getStyle().setCursor("pointer");
++        saveTaskButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
++
++        returnButton = new Button("Вернуться", event -> getUI().orElseThrow().getPage().setLocation("/"));
++        returnButton.getStyle().setCursor("pointer");
++        returnButton.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
++
++        buttons.add(saveTaskButton, returnButton);
++        //end buttons
++
++        add(buttons);
++    }
++
++    @Override
++    public void setParameter(BeforeEvent event, Long taskId) {
++        Optional<Task> optionalTask = taskService.fetchTaskById(taskId);
++
++        if (optionalTask.isEmpty()) {
++            throw new IllegalArgumentException("Invalid task ID");
++        }
++        this.taskId = taskId;
++        this.task = optionalTask.get();
++        this.taskIdInput.setValue(task.getId().toString());
++        this.taskTitleInput.setValue(task.getTitle());
++        this.taskDescriptionInput.setValue(task.getDescription());
++    }
++}
+Index: src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/main/resources/application.properties	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,13 @@
++server.port=9000
++
++spring.application.name=TaskBoard
++
++spring.datasource.url=jdbc:mysql://localhost:3306/spring
++spring.datasource.username=root
++spring.datasource.password=secret
++
++spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
++spring.jpa.show-sql=true
++
++# Hibernate ddl auto (create, create-drop, validate, update)
++spring.jpa.hibernate.ddl-auto=update
+\ No newline at end of file
+Index: src/test/java/com/example/demo/DemoApplicationTests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/com/example/demo/DemoApplicationTests.java b/src/test/java/com/example/demo/DemoApplicationTests.java
+new file mode 100644
+--- /dev/null	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
++++ b/src/test/java/com/example/demo/DemoApplicationTests.java	(revision 0df36bb43cac24607573c2f58ebaa2d874be7d20)
+@@ -0,0 +1,13 @@
++package com.example.demo;
++
++import org.junit.jupiter.api.Test;
++import org.springframework.boot.test.context.SpringBootTest;
++
++@SpringBootTest
++class DemoApplicationTests {
++
++	@Test
++	void contextLoads() {
++	}
++
++}
